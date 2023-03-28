@@ -191,7 +191,7 @@ const createPointNewTemplate = () => (
       </section>
     </form>
   </li>`
-)
+);
 
 export default class PointNew {
   getTemplate() {

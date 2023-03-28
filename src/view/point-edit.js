@@ -181,7 +181,7 @@ const createPointEditTemplate = () => (
     </section>
   </form>
 </li>`
-)
+);
 
 export default class PointEdit {
   getTemplate() {

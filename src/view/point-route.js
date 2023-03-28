@@ -38,7 +38,7 @@ const createPointRouteTemplate = () => (
       </button>
     </div>
   </li>`
-)
+);
 
 export default class PointRoute {
   getTemplate() {

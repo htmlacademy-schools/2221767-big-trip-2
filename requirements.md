@@ -24,7 +24,7 @@ npm i eslint@7.32.0 -DE
 - webpack-cli@4.9.1
 - webpack-dev-server@4.4.0
 - @babel/core@7.16.0
-- @babel/plugin-proposal-class-properties@7.16.0
+- @babel/plugin-proposal--properties@7.16.0
 - @babel/plugin-proposal-nullish-coalescing-operator@7.16.0
 - @babel/plugin-proposal-optional-chaining@7.16.0
 - @babel/eslint-parser@7.16.0

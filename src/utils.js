@@ -17,7 +17,7 @@ const getRandomInteger = (a = 0, b = 1) => {
 
 const getDate = (date) => dayjs(date).format(DATE_FORMAT);
 const getTime = (date) => dayjs(date).format(TIME_FORMAT);
-const getDateTime = (date) => dayjs(date).format(DATE_TIME_FORMAT)
+const getDateTime = (date) => dayjs(date).format(DATE_TIME_FORMAT);
 
 const getDuration = (dateFrom, dateTo) => {
   const start = dayjs(dateFrom);

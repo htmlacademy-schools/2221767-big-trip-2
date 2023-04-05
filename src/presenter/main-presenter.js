@@ -10,15 +10,20 @@ export default class MainPresenter {
     this.container = container;
   }
 
-  init() {
+  init(pointsData, destinationsData, offersData) {
+    const points = [...pointsData.getPoints()];
+    const offers = offersData;
+    const destinations = destinationsData;
     const tripSection = document.querySelector('.trip-events');
+
     render(new Sort(), tripSection);
     render(this.container, tripSection);
     render(new PointNew(), this.container.getElement());
-    render(new PointEdit(), this.container.getElement());
+    render(new PointEdit(points[0], offers, destinations), this.container.getElement()
+    );
 
-    for (let i = 0; i < 3; i++) {
-      render(new PointRoute(),this.container.getElement());
+    for (const point of points) {
+      render(new PointRoute(point, offers, destinations), this.container.getElement());
     }
   }
 }

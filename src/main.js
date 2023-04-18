@@ -1,19 +1,15 @@
-import { render } from './render.js';
+import { render, RenderPosition } from './render.js';
 import MainPresenter from './presenter/main-presenter';
 import Filter from './view/filter';
-import PointList from './view/point-list';
-import Menu from './view/menu';
-import Points from './model/points';
-import { destinations, offers } from './mock/points';
+import PointsModel from './model/points-model';
+
 
 const filterContainer = document.querySelector('.trip-controls__filters');
-const navigationContainer = document.querySelector('.trip-controls__navigation');
-const tripContainer = new PointList();
-const points = new Points();
+const tripContainer = document.querySelector('.trip-events');
+const pointModel = new PointsModel();
 
-render(new Filter(), filterContainer);
-render(new Menu(), navigationContainer);
+render(new Filter(), filterContainer, RenderPosition.BEFOREEND);
 
-const mainPresenter = new MainPresenter(tripContainer);
+const mainPresenter = new MainPresenter({container: tripContainer});
 
-mainPresenter.init(points, destinations, offers);
+mainPresenter.init(tripContainer, pointModel);

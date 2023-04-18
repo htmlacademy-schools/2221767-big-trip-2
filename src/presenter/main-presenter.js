@@ -1,29 +1,63 @@
 import { render } from '../render';
 import Sort from '../view/sort';
 import PointEdit from '../view/point-edit';
-import PointNew from '../view/point-new';
 import PointRoute from '../view/point-route';
-
+import TripList from '../view/trip-list';
 
 export default class MainPresenter {
-  constructor(container) {
-    this.container = container;
+  #tripList = null;
+  #container = null;
+  #pointsModel = null;
+
+  #pointsList = []
+  constructor() {
+    this.#tripList = new TripList();
   }
 
-  init(pointsData, destinationsData, offersData) {
-    const points = [...pointsData.getPoints()];
-    const offers = offersData;
-    const destinations = destinationsData;
-    const tripSection = document.querySelector('.trip-events');
+  init(container, pointsModel) {
+    this.#container = container;
+    this.#pointsModel = pointsModel;
+    this.#pointsList = [...this.#pointsModel.point];
 
-    render(new Sort(), tripSection);
-    render(this.container, tripSection);
-    render(new PointNew(), this.container.getElement());
-    render(new PointEdit(points[0], offers, destinations), this.container.getElement()
-    );
+    render(new Sort(), this.#container);
+    render(this.#tripList, this.#container);
 
-    for (const point of points) {
-      render(new PointRoute(point, offers, destinations), this.container.getElement());
+    for (let i = 0; i < this.#pointsList.length; i++) {
+      this.#renderPoint(this.#pointsList[i]);
     }
+  }
+
+  #renderPoint = (point) => {
+    const pointRouteComponent = new PointRoute(point);
+    const pointEditComponent = new PointEdit(point);
+
+    const replaceEditToPoint = () => {
+      this.#tripList.element.replaceChild(pointRouteComponent.element, pointEditComponent.element);
+    };
+
+    const replacePointToEdit = () => {
+      this.#tripList.element.replaceChild(pointEditComponent.element, pointRouteComponent.element);
+    };
+
+    const onEscKeyDown = (evt) => {
+      if (evt.key === 'Escape' || evt.key === 'Esc') {
+        evt.preventDefault();
+        replaceEditToPoint();
+        document.removeEventListener('keydown', onEscKeyDown);
+      }
+    };
+
+    pointRouteComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+      replacePointToEdit();
+      document.addEventListener('keydown', onEscKeyDown);
+    });
+
+    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
+      evt.preventDefault();
+      replaceEditToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    });
+
+    render(pointRouteComponent, this.#tripList.element);
   }
 }

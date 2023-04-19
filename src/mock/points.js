@@ -53,20 +53,6 @@ const createOfferByType = (id) => ({
   offers: Array.from({ length: getRandomNumber(2,5) }, createOffer)
 });
 
-const createPoint = (id) => {
-  const randomDates = createRandomDates();
-  return {
-    basePrice: getRandomNumber(tripPrice.MIN, tripPrice.MAX),
-    dateFrom: randomDates.dateFrom,
-    dateTo: randomDates.dateTo,
-    destination: createDestination(),
-    id,
-    isFavorite: Boolean(getRandomNumber(0, 1)),
-    offers: createOfferByType(),
-    type: getRandomArrayElement(POINT_TYPES)
-  };
-};
-
 const getRandomDate = () => dayjs()
   .add(getRandomNumber(1, 7), 'day')
   .add(getRandomNumber(1, 23), 'hour')
@@ -85,6 +71,20 @@ const createRandomDates = () => {
   return {
     dateFrom: date2.toISOString(),
     dateTo: date1.toISOString()
+  };
+};
+
+const createPoint = (id) => {
+  const randomDates = createRandomDates();
+  return {
+    basePrice: getRandomNumber(tripPrice.MIN, tripPrice.MAX),
+    dateFrom: randomDates.dateFrom,
+    dateTo: randomDates.dateTo,
+    destination: createDestination(),
+    id,
+    isFavorite: Boolean(getRandomNumber(0, 1)),
+    offers: createOfferByType(),
+    type: getRandomArrayElement(POINT_TYPES)
   };
 };
 

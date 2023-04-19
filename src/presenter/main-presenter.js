@@ -3,6 +3,7 @@ import Sort from '../view/sort';
 import PointEdit from '../view/point-edit';
 import PointRoute from '../view/point-route';
 import TripList from '../view/trip-list';
+import NoPoint from '../view/no-point';
 
 export default class MainPresenter {
   #tripList = null;
@@ -18,6 +19,10 @@ export default class MainPresenter {
     this.#container = container;
     this.#pointsModel = pointsModel;
     this.#pointsList = [...this.#pointsModel.point];
+
+    if (this.#pointsList.length === 0) {
+      return render(new NoPoint(), this.#container);
+    }
 
     render(new Sort(), this.#container);
     render(this.#tripList, this.#container);

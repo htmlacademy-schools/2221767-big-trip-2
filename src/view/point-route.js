@@ -1,5 +1,5 @@
-import { createElement } from '../render.js';
 import dayjs from 'dayjs';
+import AbstractView from '../framework/view/abstract-view';
 
 const createPointRouteTemplate = (point) => {
   const getDate = (date) => dayjs(date).format('D MMMM');
@@ -45,10 +45,10 @@ const createPointRouteTemplate = (point) => {
   </li>`;
 };
 
-export default class PointRoute {
-  #element = null;
+export default class PointRoute extends AbstractView {
   #point = null;
   constructor(point) {
+    super();
     this.#point = point;
   }
 
@@ -56,15 +56,13 @@ export default class PointRoute {
     return createPointRouteTemplate(this.#point);
   }
 
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
+  setClickHandler = (callback) => {
+    this._callback.click = callback;
+    this.element.addEventListener('click', this.#clickHandler);
+  };
 
-    return this.#element;
-  }
-
-  removeElement() {
-    this.#element = null;
-  }
+  #clickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.click();
+  };
 }

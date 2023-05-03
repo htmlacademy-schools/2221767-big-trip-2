@@ -1,4 +1,4 @@
-import { render } from '../render';
+import { render } from '../framework/render';
 import Sort from '../view/sort';
 import PointEdit from '../view/point-edit';
 import PointRoute from '../view/point-route';
@@ -10,7 +10,7 @@ export default class MainPresenter {
   #container = null;
   #pointsModel = null;
 
-  #pointsList = []
+  #pointsList = [];
   constructor() {
     this.#tripList = new TripList();
   }
@@ -52,17 +52,16 @@ export default class MainPresenter {
       }
     };
 
-    pointRouteComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    pointRouteComponent.setClickHandler(() => {
       replacePointToEdit();
       document.addEventListener('keydown', onEscKeyDown);
     });
 
-    pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', (evt) => {
-      evt.preventDefault();
+    pointEditComponent.setClickHandler(()=> {
       replaceEditToPoint();
       document.removeEventListener('keydown', onEscKeyDown);
     });
 
     render(pointRouteComponent, this.#tripList.element);
-  }
+  };
 }

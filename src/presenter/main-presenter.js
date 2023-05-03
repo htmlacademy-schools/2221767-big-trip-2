@@ -10,7 +10,7 @@ export default class MainPresenter {
   #container = null;
   #pointsModel = null;
 
-  #pointsList = []
+  #pointsList = [];
   constructor() {
     this.#tripList = new TripList();
   }
@@ -63,5 +63,5 @@ export default class MainPresenter {
     });
 
     render(pointRouteComponent, this.#tripList.element);
-  }
+  };
 }

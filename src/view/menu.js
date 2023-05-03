@@ -10,6 +10,6 @@ const createMenuTemplate = () => (
 export default class Menu extends AbstractView {
   get template() {
     return createMenuTemplate();
-  };
+  }
 }
 

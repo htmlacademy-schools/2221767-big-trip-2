@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 import { getRandomNumber, getRandomArrayElement } from '../utils';
 import {nanoid} from 'nanoid';
+import {filter} from '../utils';
 const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 const OFFER_TITLES = ['Upgrade to a business class', 'Order Uber', 'Add lunch', 'Order train'];
 
@@ -29,6 +30,14 @@ const tripPrice = {
   MAX: 3000
 };
 
+const FILTER_TYPE = {
+  EVERYTHING: 'everything',
+  FUTURE: 'future',
+  PAST: 'past'
+};
+
+const MAX_DAYS_GAP = 7;
+
 const createPicture = () => ({
   src: `http://picsum.photos/248/152?r=${getRandomNumber(0, 10)}`,
   description: getRandomArrayElement(DESCRIPTIONS),
@@ -48,7 +57,7 @@ const createOffer = (id) => ({
 });
 
 const getRandomDate = () => dayjs()
-  .add(getRandomNumber(1, 7), 'day')
+  .add(getRandomNumber(-MAX_DAYS_GAP, MAX_DAYS_GAP), 'day')
   .add(getRandomNumber(1, 23), 'hour')
   .add(getRandomNumber(1, 59), 'minute');
 
@@ -82,4 +91,10 @@ const createPoint = () => {
   };
 };
 
-export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, createPoint, createRandomDates };
+export const generateFilter = (points) => Object.entries(filter).map(
+  ([filterName, filterPoints]) => ({
+    name: filterName,
+    count: filterPoints(points).length,
+  }),
+);
+export { POINT_TYPES, OFFER_TITLES, DESCRIPTIONS, DESTINATIONS_NAMES, tripPrice, offerPrice, createPoint, createRandomDates, FILTER_TYPE, MAX_DAYS_GAP };

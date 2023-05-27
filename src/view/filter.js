@@ -20,7 +20,7 @@ const createFiltersTemplate = (filterItems) => {
     ${filterItemsTemplate}
     <button class="visually-hidden" type="submit">Accept filter</button>
   </form>`;
-}
+};
 export default class Filter extends AbstractView {
   #filters = null;
 

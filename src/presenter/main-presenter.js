@@ -64,8 +64,8 @@ export default class MainPresenter {
   };
 
   #clearEventsList = () => {
-  this.#pointPresenter.forEach((presenter) => presenter.destroy());
-  this.#pointPresenter.clear();
+    this.#pointPresenter.forEach((presenter) => presenter.destroy());
+    this.#pointPresenter.clear();
   };
 
   #handlePointChange = (updatedPoint) => {

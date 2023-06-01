@@ -1,4 +1,4 @@
-import {filter} from "../utils";
+import {filter} from '../utils';
 
 const FILTER_TYPE = {
   EVERYTHING: 'everything',
@@ -13,4 +13,4 @@ export const generateFilter = (points) => Object.entries(filter).map(
   }),
 );
 
-export {FILTER_TYPE}
+export {FILTER_TYPE};

@@ -1,4 +1,4 @@
-import {FILTER_TYPE} from './mock/points';
+import {FILTER_TYPE} from './mock/filter';
 import dayjs from 'dayjs';
 
 const getRandomNumber = (min, max) => Math.floor(Math.random() * (max - min) + min);
@@ -30,5 +30,15 @@ const filter = {
   [FILTER_TYPE.PAST]: (points) => points.filter((point) => isPointPast(point))
 };
 
+const sortByDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 
-export { getRandomNumber, getRandomArrayElement, updateItem, isEscKeyDown, filter };
+const sortByTime = (pointA, pointB) => {
+  const timeA = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const timeB = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+
+  return timeA - timeB;
+};
+
+const sortByPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
+
+export { getRandomNumber, getRandomArrayElement, updateItem, isEscKeyDown, filter, sortByDay, sortByTime, sortByPrice  };

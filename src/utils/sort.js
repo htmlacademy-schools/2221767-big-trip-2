@@ -18,4 +18,4 @@ const sorting = {
   [SORT_TYPE.PRICE]: (points) => points.sort(sortByPrice),
 };
 
-export {sortByDay, sortByTime, sortByPrice, sorting}
+export {sortByDay, sortByTime, sortByPrice, sorting};

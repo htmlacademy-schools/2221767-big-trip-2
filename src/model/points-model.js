@@ -7,7 +7,7 @@ export default class PointsModel {
     this.#points = points;
     this.#destinations = destinations;
     this.#offers = offers;
-  };
+  }
 
   get points() {
     return this.#points;

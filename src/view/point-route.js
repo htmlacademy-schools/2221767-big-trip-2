@@ -2,20 +2,20 @@ import dayjs from 'dayjs';
 import AbstractView from '../framework/view/abstract-view';
 
 
-  const generateOffers = (allOffers, checkedOffers) => {
-    let result = '';
-    allOffers.forEach((offer) => {
-      if (checkedOffers.includes(offer.id)) {
-        result = `${result}<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
-      }
-    });
-    return result;
-  };
+const generateOffers = (allOffers, checkedOffers) => {
+  let result = '';
+  allOffers.forEach((offer) => {
+    if (checkedOffers.includes(offer.id)) {
+      result = `${result}<li class="event__offer"><span class="event__offer-title">${offer.title}</span>&plus;&euro;&nbsp;<span class="event__offer-price">${offer.price}</span></li>`;
+    }
+  });
+  return result;
+};
 
-  const createPointRouteTemplate = (point, destinations, offers) => {
-    const { basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds } = point;
+const createPointRouteTemplate = (point, destinations, offers) => {
+  const { basePrice, type, destinationId, isFavorite, dateFrom, dateTo, offerIds } = point;
 
-    const offersByType = offers.find((offer) => offer.type === type);
+  const offersByType = offers.find((offer) => offer.type === type);
 
   const getDate = (date) => dayjs(date).format('D MMMM');
   const getTime = (date) => dayjs(date).format('hh:mm');

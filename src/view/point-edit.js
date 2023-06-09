@@ -3,29 +3,29 @@ import AbstractStatefulView from '../framework/view/abstract-stateful-view';
 import { POINT_TYPES } from '../mock/points';
 import { getDateTime } from '../utils';
 
-  const generatePictures = (pictures) => {
-    let result = '';
-    pictures.forEach((picture) => {
-      result = `${result}<img class="event__photo" src="${picture['src']}" alt="${picture.description}">`;
-    });
-    return result;
-  };
+const generatePictures = (pictures) => {
+  let result = '';
+  pictures.forEach((picture) => {
+    result = `${result}<img class="event__photo" src="${picture['src']}" alt="${picture.description}">`;
+  });
+  return result;
+};
 
-  const generateDestinations = (destinations) => {
-    let result = '';
-    destinations.forEach((destination) => {
-      result = `${result}
-    <option value="${destination.name}"></option>`;
-    });
-    return result;
-  };
-  const generateOffers = (allOffers, checkedOffers) => {
-    let result = '';
-    allOffers.forEach((offer) => {
-      const checked = checkedOffers.includes(offer.id) ? 'checked' : '';
-      result = `${result}
+const generateDestinations = (destinations) => {
+  let result = '';
+  destinations.forEach((destination) => {
+    result = `${result}
+   <option value="${destination.name}"></option>`;
+  });
+  return result;
+};
+const generateOffers = (allOffers, checkedOffers) => {
+  let result = '';
+  allOffers.forEach((offer) => {
+    const checked = checkedOffers.includes(offer.id) ? 'checked' : '';
+    result = `${result}
     <div class="event__offer-selector">
-      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked}>
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -35,25 +35,25 @@ import { getDateTime } from '../utils';
     });
     return result;
   };
-  const generateDate = (dateFrom, dateTo) => (
-    `<div class="event__field-group  event__field-group--time">
-    <label class="visually-hidden" for="event-start-time-1">From</label>
-    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}">
-    &mdash;
-    <label class="visually-hidden" for="event-end-time-1">To</label>
-    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}">
-    </div>`
-  );
+const generateDate = (dateFrom, dateTo) => (
+  `<div class="event__field-group  event__field-group--time">
+   <label class="visually-hidden" for="event-start-time-1">From</label>
+   <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}">
+   &mdash;
+   <label class="visually-hidden" for="event-end-time-1">To</label>
+   <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}">
+   </div>`
+);
 
-  const generateType = (currentType) => POINT_TYPES.map((type) =>
-    `<div class="event__type-item">
-    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
-    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
-    </div>`).join('');
+const generateType = (currentType) => POINT_TYPES.map((type) =>
+  `<div class="event__type-item">
+   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
+   <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
+   </div>`).join('');
 
-  const createEditFormTemplate = (point, destinations, offers) => {
-    const { basePrice, type, destinationId, dateFrom, dateTo, offerIds } = point;
-    const offersByType = offers.find((offer) => offer.type === type);
+const createEditFormTemplate = (point, destinations, offers) => {
+  const { basePrice, type, destinationId, dateFrom, dateTo, offerIds } = point;
+  const offersByType = offers.find((offer) => offer.type === type);
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">

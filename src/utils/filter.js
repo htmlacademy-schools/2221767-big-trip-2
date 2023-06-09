@@ -1,5 +1,5 @@
 import { FILTER_TYPE } from '../mock/consts';
-import { isPointPast, isPointFuture} from "../utils";
+import { isPointPast, isPointFuture} from '../utils';
 
 const filter = {
   [FILTER_TYPE.EVERYTHING]: (points) => points,
@@ -7,4 +7,4 @@ const filter = {
   [FILTER_TYPE.PAST]: (points) => points.filter((point) => isPointPast(point))
 };
 
-export { filter }
+export { filter };

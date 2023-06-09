@@ -5,4 +5,4 @@ const FILTER_TYPE = {
   PAST: 'past'
 };
 
-export { FILTER_TYPE }
+export { FILTER_TYPE };

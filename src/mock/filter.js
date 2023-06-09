@@ -1,10 +1,5 @@
-import {filter} from '../utils';
+import { filter } from '../utils/filter';
 
-const FILTER_TYPE = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PAST: 'past'
-};
 
 export const generateFilter = (points) => Object.entries(filter).map(
   ([filterName, filterPoints]) => ({
@@ -13,4 +8,3 @@ export const generateFilter = (points) => Object.entries(filter).map(
   }),
 );
 
-export {FILTER_TYPE};

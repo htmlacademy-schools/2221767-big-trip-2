@@ -12,10 +12,10 @@ const sortByTime = (pointA, pointB) => {
 
 const sortByPrice = (pointA, pointB) => pointA.basePrice - pointB.basePrice;
 
-const sorting = {
+const sortFunction = {
   [SORT_TYPE.DAY]: (points) => points.sort(sortByDay),
   [SORT_TYPE.TIME]: (points) => points.sort(sortByTime),
   [SORT_TYPE.PRICE]: (points) => points.sort(sortByPrice),
 };
 
-export {sortByDay, sortByTime, sortByPrice, sorting};
+export {sortByDay, sortByTime, sortByPrice, sortFunction};

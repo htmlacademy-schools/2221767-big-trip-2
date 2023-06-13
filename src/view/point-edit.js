@@ -1,10 +1,20 @@
 import dayjs from 'dayjs';
-import AbstractStatefulView from '../framework/view/abstract-stateful-view';
+import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { POINT_TYPES } from '../mock/points';
 import { getDateTime } from '../utils';
 import flatpickr from 'flatpickr';
 
 import 'flatpickr/dist/flatpickr.min.css';
+
+const BLANK_POINT = {
+  basePrice: 0,
+  dateFrom: dayjs(),
+  dateTo: dayjs().add(7, 'day'),
+  destinationId: 0,
+  isFavorite: false,
+  offerIds: [],
+  type: POINT_TYPES[0],
+};
 
 const generatePictures = (pictures) => {
   let result = '';
@@ -54,7 +64,7 @@ const generateType = (currentType) => POINT_TYPES.map((type) =>
    <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
    </div>`).join('');
 
-const createEditFormTemplate = (point, destinations, offers) => {
+const createEditFormTemplate = (point, destinations, offers, isNewPoint) => {
   const { basePrice, type, destinationId, dateFrom, dateTo, offerIds } = point;
   const offersByType = offers.find((offer) => offer.type === type);
 
@@ -89,11 +99,12 @@ const createEditFormTemplate = (point, destinations, offers) => {
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${basePrice}">
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}">
       </div>
       <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-      <button class="event__reset-btn" type="reset">Delete</button>
-      <button class="event__rollup-btn" type="button">
+      ${isNewPoint ? '<button class="event__reset-btn" type="reset">Cancel</button>' :
+      `<button class="event__reset-btn" type="reset">Delete</button>
+       <button class="event__rollup-btn" type="button">`}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
@@ -121,36 +132,34 @@ const createEditFormTemplate = (point, destinations, offers) => {
 export default class PointEdit extends AbstractStatefulView {
   #destination = null;
   #offers = null;
+  #isNewPoint = null;
 
-  #dateFromPicker = null;
-  #dateToPicker = null;
+  #datepicker = null;
+  #dateTo = null;
 
-  constructor(point, destination, offers) {
+  constructor({ point = BLANK_POINT, destination, offers, isNewPoint }) {
     super();
     this._state = PointEdit.parsePointToState(point);
     this.#destination = destination;
     this.#offers = offers;
+    this.#isNewPoint = isNewPoint;
     this.#setInnerHandlers();
     this.#setDateFromPicker();
     this.#setDateToPicker();
   }
 
-  removeElement() {
+  get template() {
+    return createEditFormTemplate(this._state, this.#destination, this.#offers, this.#isNewPoint);
+  }
+
+  removeElement = () => {
     super.removeElement();
 
-    if (this.#dateFromPicker) {
-      this.#dateFromPicker.destroy();
-      this.#dateFromPicker = null;
+    if (this.#datepicker) {
+      this.#datepicker.destroy();
+      this.#datepicker = null;
     }
-    if (this.#dateToPicker) {
-      this.#dateToPicker.destroy();
-      this.#dateToPicker = null;
-    }
-  }
-
-  get template() {
-    return createEditFormTemplate(this._state, this.#destination, this.#offers);
-  }
+  };
 
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
@@ -163,6 +172,17 @@ export default class PointEdit extends AbstractStatefulView {
     evt.preventDefault();
     this._callback.closeClick();
   };
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#deleteClickHandler);
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(PointEdit.parseStateToPoint(this._state));
+  };
+
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
@@ -179,26 +199,44 @@ export default class PointEdit extends AbstractStatefulView {
   }
 
   #setDateFromPicker() {
-    this.#dateFromPicker = flatpickr(this.element.querySelector('#event-start-time-1'), {
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateFrom,
-      onClose: this.#dateFromChangeHandler,
-      enableTime: true,
-      time_24hr: true,
-    });
-  }
+    if (this._state.dateFrom) {
+      this.#datepicker = flatpickr(
+        this.element.querySelector('#event-start-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          time24hr: true,
+          defaultDate: this._state.dateFrom,
+          onChange: this.#dateFromChangeHandler,
+        },
+      );
+    }
+  };
 
   #setDateToPicker() {
-    this.#dateToPicker = flatpickr(this.element.querySelector('#event-end-time-1'), {
-      dateFormat: 'd/m/y H:i',
-      defaultDate: this._state.dateTo,
-      onClose: this.#dateToChangeHandler,
-      enableTime: true,
-      time_24hr: true,
-    });
-  }
+    if (this._state.dateTo) {
+      this.#datepicker = flatpickr(
+        this.element.querySelector('#event-end-time-1'),
+        {
+          enableTime: true,
+          dateFormat: 'd/m/y H:i',
+          time24hr: true,
+          defaultDate: this._state.dateTo,
+          minDate: this._state.dateFrom,
+          onChange: this.#dateToChangeHandler,
+        },
+      );
+    }
+  };
 
   #dateFromChangeHandler = ([userDate]) => {
+    if (this.#dateTo < userDate) {
+      this.updateElement({
+        dateFrom: userDate,
+        dateTo: userDate
+      });
+      return;
+    }
     this.updateElement({
       dateFrom: userDate,
     });
@@ -206,18 +244,21 @@ export default class PointEdit extends AbstractStatefulView {
 
   #dateToChangeHandler = ([userDate]) => {
     this.updateElement({
-      dateFrom: userDate,
+      dateTo: userDate,
     });
+    this.#dateTo = userDate;
   };
 
   _restoreHandlers = () => {
     this.#setInnerHandlers();
-    this.setFormSubmitHandler(this._callback.formSubmit);
-    this.setCloseClickHandler(this._callback.closeClick);
+    this.#setOuterHandlers();
+    this.#setDateFromPicker();
+    this.#setDateToPicker();
   };
 
   #typePointChangeHandler = (evt) => {
     evt.preventDefault();
+    this._state.offerIds = [];
     this.updateElement({
       type: evt.target.value,
       offerIds: [],
@@ -226,29 +267,31 @@ export default class PointEdit extends AbstractStatefulView {
 
   #pointDestinationChangeHandler = (evt) => {
     evt.preventDefault();
-    const destination = this.#destination.filter((d) => d.name === evt.target.value);
+    const destination = this.#destination.find((d) => d.name === evt.target.value);
     this.updateElement({
-      destinationId: destination[0].id,
+      destinationId: destination.id,
     });
   };
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-    if (this._state.offerIds.includes(Number(evt.target.id.slice(-1)))) {
-      this._state.offerIds = this._state.offerIds.filter((n) => n !== Number(evt.target.id.slice(-1)));
+    const ids = this._state.offerIds.filter((n) => n !== Number(evt.target.id.slice(-1)));
+    let currentIds = [...this._state.offerIds];
+    if (ids.length !== this._state.offerIds.length) {
+      currentIds = ids;
     }
     else {
-      this._state.offerIds.push(Number(evt.target.id.slice(-1)));
+      currentIds.push(Number(evt.target.id.slice(-1)));
     }
-    this.updateElement({
-      offerIds: this._state.offerIds,
+    this._setState({
+      offerIds: currentIds
     });
   };
 
   #pointPriceChangeHandler = (evt) => {
     evt.preventDefault();
     this._setState({
-      basePrice: evt.target.value,
+      basePrice: `${Number(evt.target.value).toString()}`,
     });
   };
 
@@ -259,6 +302,13 @@ export default class PointEdit extends AbstractStatefulView {
     this.element.querySelector('.event__input--price').addEventListener('change', this.#pointPriceChangeHandler);
   };
 
+  #setOuterHandlers = () => {
+    if (!this.#isNewPoint) {
+      this.setCloseClickHandler(this._callback.closeClick);
+    }
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
+  };
 
   static parsePointToState = (point) => ({
     ...point,

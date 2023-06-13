@@ -2,6 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import PointEdit from '../view/point-edit';
 import PointRoute from '../view/point-route';
 import { isEscKeyDown } from '../utils';
+import { UpdateType, UserAction } from '../mock/consts.js';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -14,7 +15,7 @@ export default class PointPresenter {
   #mode = Mode.DEFAULT;
 
   #pointsList = null;
-  #changeData = null;
+  #handleDataChange = null;
   #changeMode = null;
 
   #pointRouteComponent = null;
@@ -24,10 +25,12 @@ export default class PointPresenter {
   #destinations = null;
   #offers = null;
 
-  constructor(pointsList, pointsModel, changeData, changeMode) {
+  #isNewPoint = false;
+
+  constructor(pointsList, pointsModel, handleDataChange, changeMode) {
     this.#pointsList = pointsList;
     this.#pointsModel = pointsModel;
-    this.#changeData = changeData;
+    this.#handleDataChange = handleDataChange;
     this.#changeMode = changeMode;
   }
 
@@ -40,13 +43,19 @@ export default class PointPresenter {
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointRouteComponent = new PointRoute(point, this.#destinations, this.#offers);
-    this.#pointEditComponent = new PointEdit(point, this.#destinations, this.#offers);
+    this.#pointEditComponent = new PointEdit({
+      point: point,
+      destination: this.#destinations,
+      offers: this.#offers,
+      isNewPoint: this.#isNewPoint
+    });
 
     this.#pointRouteComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointRouteComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setCloseClickHandler(this.#handleCloseClick);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
 
     if (prevPointRouteComponent === null || prevPointEditComponent === null) {
       render(this.#pointRouteComponent, this.#pointsList);
@@ -93,30 +102,34 @@ export default class PointPresenter {
   #onEscKeyDown = (evt) => {
     if (isEscKeyDown(evt)) {
       evt.preventDefault();
-      this.#pointEditComponent.reset(this.#point);
-      this.#replaceFormToPoint();
+      this.resetView();
     }
   };
 
   #handleEditClick = () => {
     this.#replacePointToForm();
-
   };
 
-  #handleFormSubmit = (point) => {
-    this.#changeData(point);
+  #handleFormSubmit = (update) => {
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.MINOR, update);
     this.#replaceFormToPoint();
-
   };
 
   #handleCloseClick = () => {
-    this.#pointEditComponent.reset(this.#point);
-    this.#replaceFormToPoint();
-
+    this.resetView();
   };
 
   #handleFavoriteClick = () => {
-    this.#changeData({ ...this.#point, isFavorite: !this.#point.isFavorite });
-  };
+    this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.PATCH, {
+      ...this.#point,
+      isFavorite: !this.#point.isFavorite});
+  }
 
+  #handleDeleteClick = (point) => {
+    this.#handleDataChange(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  };
 }

@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { SORT_TYPE } from '../mock/sort';
+import { SORT_TYPE } from '../const/sort';
 
 const createSortTemplate = (currentSortType) => (
   `<form class="trip-events__trip-sort  trip-sort" action="#" method="get">

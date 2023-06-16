@@ -1,7 +1,9 @@
-import { FILTER_TYPE, UpdateType } from '../mock/consts';
+import { FILTER_TYPE} from '../const/filter';
+import { UpdateType } from '../const/utils';
 import { remove, replace, render } from '../framework/render';
 import { filterFunction } from '../utils/filter';
 import Filter from '../view/filter';
+
 export default class FilterPresenter {
   #filterContainer = null;
   #filterModel = null;

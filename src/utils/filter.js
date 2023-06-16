@@ -1,4 +1,4 @@
-import { FILTER_TYPE } from '../mock/consts';
+import { FILTER_TYPE } from '../const/filter';
 import { isPointPast, isPointFuture} from '../utils';
 
 const filterFunction = {

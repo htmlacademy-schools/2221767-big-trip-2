@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
-import { POINT_TYPES } from '../mock/points';
+import { POINT_TYPES } from '../const/point-types';
 import { getDateTime } from '../utils';
 import flatpickr from 'flatpickr';
 
@@ -10,10 +10,10 @@ const BLANK_POINT = {
   basePrice: 0,
   dateFrom: dayjs(),
   dateTo: dayjs().add(7, 'day'),
-  destinationId: 0,
+  destination: 1,
   isFavorite: false,
-  offerIds: [],
-  type: POINT_TYPES[0],
+  offers: [],
+  type: POINT_TYPES.TAXI
 };
 
 const generatePictures = (pictures) => {
@@ -45,9 +45,9 @@ const generateOffers = (allOffers, checkedOffers) => {
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`;
-    });
-    return result;
-  };
+  });
+  return result;
+};
 const generateDate = (dateFrom, dateTo) => (
   `<div class="event__field-group  event__field-group--time">
    <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -58,15 +58,16 @@ const generateDate = (dateFrom, dateTo) => (
    </div>`
 );
 
-const generateType = (currentType) => POINT_TYPES.map((type) =>
+const generateType = (currentType) => Object.values(POINT_TYPES).map((type) =>
   `<div class="event__type-item">
    <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}>
-   <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type[0].toUpperCase() + type.slice(1)}</label>
+   <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
    </div>`).join('');
 
-const createEditFormTemplate = (point, destinations, offers, isNewPoint) => {
-  const { basePrice, type, destinationId, dateFrom, dateTo, offerIds } = point;
-  const offersByType = offers.find((offer) => offer.type === type);
+const createEditFormTemplate = (point, destinations, allOffers, isNewPoint) => {
+  const { basePrice, type, destination, dateFrom, dateTo, offers } = point;
+  const offersByType = allOffers.find((offer) => offer.type === type);
+  const currentDestination = destinations.find((item) => item.id === destination);
 
   return (`<li class="trip-events__item">
   <form class="event event--edit" action="#" method="post">
@@ -85,10 +86,10 @@ const createEditFormTemplate = (point, destinations, offers, isNewPoint) => {
         </div>
       </div>
       <div class="event__field-group  event__field-group--destination">
-        <label class="event__label  event__type-output" for="event-destination-${destinationId}">
+        <label class="event__label  event__type-output" for="event-destination-${destination}">
           ${type}
         </label>
-        <input class="event__input  event__input--destination" id="event-destination-${destinationId}" type="text" name="event-destination" value="${destinations[destinationId].name}" list="destination-list-1">
+        <input class="event__input  event__input--destination" id="event-destination-${destination}" type="text" name="event-destination" value="${currentDestination ? (currentDestination.name) : ''}" list="destination-list-1">
         <datalist id="destination-list-1">
         ${generateDestinations(destinations)}
         </datalist>
@@ -112,19 +113,19 @@ const createEditFormTemplate = (point, destinations, offers, isNewPoint) => {
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-              ${generateOffers(offersByType.offers, offerIds)}
+              ${generateOffers(offersByType.offers, offers)}
         </div>
       </section>
-      <section class="event__section  event__section--destination">
+       ${currentDestination ? `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-        <p class="event__destination-description">${destinations[destinationId].description}</p>
+        <p class="event__destination-description">${currentDestination.description}</p>
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${generatePictures(destinations[destinationId].pictures)}
+            ${generatePictures(currentDestination.pictures)}
           </div>
         </div>
       </section>
-    </section>
+    </section>` : ''}
   </form>
 </li>`);
 };
@@ -133,6 +134,7 @@ export default class PointEdit extends AbstractStatefulView {
   #destination = null;
   #offers = null;
   #isNewPoint = null;
+  #offersByType = null;
 
   #datepicker = null;
   #dateTo = null;
@@ -142,6 +144,7 @@ export default class PointEdit extends AbstractStatefulView {
     this._state = PointEdit.parsePointToState(point);
     this.#destination = destination;
     this.#offers = offers;
+    this.#offersByType = this.#offers.find((offer) => offer.type === this._state.type);
     this.#isNewPoint = isNewPoint;
     this.#setInnerHandlers();
     this.#setDateFromPicker();
@@ -196,7 +199,7 @@ export default class PointEdit extends AbstractStatefulView {
 
   reset = (point) => {
     this.updateElement(PointEdit.parsePointToState(point));
-  }
+  };
 
   #setDateFromPicker() {
     if (this._state.dateFrom) {
@@ -211,7 +214,7 @@ export default class PointEdit extends AbstractStatefulView {
         },
       );
     }
-  };
+  }
 
   #setDateToPicker() {
     if (this._state.dateTo) {
@@ -227,7 +230,7 @@ export default class PointEdit extends AbstractStatefulView {
         },
       );
     }
-  };
+  }
 
   #dateFromChangeHandler = ([userDate]) => {
     if (this.#dateTo < userDate) {
@@ -258,10 +261,10 @@ export default class PointEdit extends AbstractStatefulView {
 
   #typePointChangeHandler = (evt) => {
     evt.preventDefault();
-    this._state.offerIds = [];
+    this._state.offers = [];
     this.updateElement({
       type: evt.target.value,
-      offerIds: [],
+      offers: [],
     });
   };
 
@@ -269,22 +272,22 @@ export default class PointEdit extends AbstractStatefulView {
     evt.preventDefault();
     const destination = this.#destination.find((d) => d.name === evt.target.value);
     this.updateElement({
-      destinationId: destination.id,
+      destination: destination.id,
     });
   };
 
   #offersChangeHandler = (evt) => {
     evt.preventDefault();
-    const ids = this._state.offerIds.filter((n) => n !== Number(evt.target.id.slice(-1)));
-    let currentIds = [...this._state.offerIds];
-    if (ids.length !== this._state.offerIds.length) {
-      currentIds = ids;
+    const offers = this._state.offers.filter((n) => n !== Number(evt.target.id.slice(-1)));
+    let currentOffers = [...this._state.offers];
+    if (offers.length !== this._state.offers.length) {
+      currentOffers = offers;
     }
     else {
-      currentIds.push(Number(evt.target.id.slice(-1)));
+      currentOffers.push(Number(evt.target.id.slice(-1)));
     }
     this._setState({
-      offerIds: currentIds
+      offers: currentOffers
     });
   };
 
@@ -297,7 +300,9 @@ export default class PointEdit extends AbstractStatefulView {
 
   #setInnerHandlers = () => {
     this.element.querySelector('.event__type-list').addEventListener('change', this.#typePointChangeHandler);
-    this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+    if (this.#offersByType && this.#offersByType.offers.length > 0) {
+      this.element.querySelector('.event__available-offers').addEventListener('change', this.#offersChangeHandler);
+    }
     this.element.querySelector('.event__input--destination').addEventListener('change', this.#pointDestinationChangeHandler);
     this.element.querySelector('.event__input--price').addEventListener('change', this.#pointPriceChangeHandler);
   };
@@ -320,6 +325,7 @@ export default class PointEdit extends AbstractStatefulView {
     const point = { ...state };
     return point;
   };
+
 
   _restoreHandlers() {
     return undefined;

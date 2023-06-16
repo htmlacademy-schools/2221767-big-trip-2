@@ -1,10 +1,3 @@
-
-const FILTER_TYPE = {
-  EVERYTHING: 'everything',
-  FUTURE: 'future',
-  PAST: 'past'
-};
-
 const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
@@ -17,4 +10,4 @@ const UserAction = {
   DELETE_POINT: 'DELETE_POINT',
 };
 
-export { FILTER_TYPE, UpdateType, UserAction };
+export { UpdateType, UserAction };

@@ -2,7 +2,7 @@ import { render, replace, remove } from '../framework/render.js';
 import PointEdit from '../view/point-edit';
 import PointRoute from '../view/point-route';
 import { isEscKeyDown } from '../utils';
-import { UpdateType, UserAction } from '../mock/consts.js';
+import { UpdateType, UserAction } from '../const/utils';
 
 const Mode = {
   DEFAULT: 'DEFAULT',
@@ -21,33 +21,36 @@ export default class PointPresenter {
   #pointRouteComponent = null;
   #pointEditComponent = null;
 
+  #destinationsModel = null;
+  #offersModel = null;
   #pointsModel = null;
   #destinations = null;
   #offers = null;
 
-  #isNewPoint = false;
 
-  constructor(pointsList, pointsModel, handleDataChange, changeMode) {
+  constructor(pointsList, pointsModel, handleDataChange, changeMode, destinationsModel, offersModel) {
     this.#pointsList = pointsList;
     this.#pointsModel = pointsModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
     this.#handleDataChange = handleDataChange;
     this.#changeMode = changeMode;
   }
 
   init = (point) => {
     this.#point = point;
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
+    this.#destinations = [...this.#destinationsModel.destinations];
+    this.#offers = [...this.#offersModel.offers];
 
     const prevPointRouteComponent = this.#pointRouteComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointRouteComponent = new PointRoute(point, this.#destinations, this.#offers);
     this.#pointEditComponent = new PointEdit({
-      point: point,
+      point,
       destination: this.#destinations,
       offers: this.#offers,
-      isNewPoint: this.#isNewPoint
+      isNewPoint: false
     });
 
     this.#pointRouteComponent.setEditClickHandler(this.#handleEditClick);
@@ -123,7 +126,7 @@ export default class PointPresenter {
     this.#handleDataChange(UserAction.UPDATE_POINT, UpdateType.PATCH, {
       ...this.#point,
       isFavorite: !this.#point.isFavorite});
-  }
+  };
 
   #handleDeleteClick = (point) => {
     this.#handleDataChange(

@@ -1,7 +1,7 @@
 import PointEdit from '../view/point-edit';
 import { render, remove, RenderPosition } from '../framework/render.js';
-import { UpdateType, UserAction } from '../mock/consts.js';
-import {isEscKeyDown} from '../utils';
+import { UpdateType, UserAction } from '../const/utils';
+import { isEscKeyDown } from '../utils';
 import { nanoid } from 'nanoid';
 
 export default class NewPointPresenter {
@@ -12,16 +12,18 @@ export default class NewPointPresenter {
   #destroyCallback = null;
   #pointEditComponent = null;
 
+  #destinationsModel = null;
+  #offersModel = null;
   #pointsModel = null;
   #destinations = null;
   #offers = null;
 
-  #isNewPoint = false;
-
-  constructor(pointsListContainer, changeData, pointsModel) {
+  constructor(pointsListContainer, changeData, pointsModel, destinationsModel, offersModel) {
     this.#pointsListContainer = pointsListContainer;
     this.#changeData = changeData;
     this.#pointsModel = pointsModel;
+    this.#destinationsModel = destinationsModel;
+    this.#offersModel = offersModel;
   }
 
   init = (callback) => {
@@ -30,13 +32,12 @@ export default class NewPointPresenter {
       return;
     }
 
-    this.#destinations = [...this.#pointsModel.destinations];
-    this.#offers = [...this.#pointsModel.offers];
+    this.#destinations = [...this.#destinationsModel.destinations];
+    this.#offers = [...this.#offersModel.offers];
 
     this.#pointEditComponent = new PointEdit({
       destination: this.#destinations,
       offers: this.#offers,
-      isNewPoint: this.#isNewPoint
     });
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);

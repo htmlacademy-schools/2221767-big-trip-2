@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import {SORT_TYPE} from '../mock/sort';
+import {SORT_TYPE} from '../const/sort';
 
 const sortByDay = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 

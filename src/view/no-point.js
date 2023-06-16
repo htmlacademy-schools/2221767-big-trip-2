@@ -1,5 +1,5 @@
 import AbstractView from '../framework/view/abstract-view.js';
-import { FILTER_TYPE } from '../mock/consts';
+import { FILTER_TYPE } from '../const/filter';
 
 const NoPointsTexts = {
   [FILTER_TYPE.EVERYTHING]: 'Click New Event to create your first point',

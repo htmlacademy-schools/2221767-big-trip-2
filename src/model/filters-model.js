@@ -6,7 +6,7 @@ export default class FiltersModel extends Observable {
 
   get filter() {
     return this.#filter;
-  };
+  }
 
   setFilter = (updateType, filter) => {
     this.#filter = filter;

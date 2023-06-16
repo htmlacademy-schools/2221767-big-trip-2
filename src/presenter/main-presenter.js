@@ -7,7 +7,7 @@ import { SORT_TYPE } from '../const/sort';
 import { sortFunction } from '../utils/sort';
 import NewPointPresenter from './new-point-presenter';
 import { FILTER_TYPE} from '../const/filter';
-import { UpdateType, UserAction } from "../const/utils";
+import { UpdateType, UserAction } from '../const/utils';
 import { filterFunction } from '../utils/filter.js';
 import LoadingMessage from '../view/loading-message';
 
@@ -105,7 +105,7 @@ export default class MainPresenter {
 
   #renderLoadingMessage = () => {
     render(this.#loadingMessageComponent, this.#tripContainer, RenderPosition.AFTERBEGIN);
-  }
+  };
 
   #clearAll = ({ resetSortType = false } = {}) => {
     this.#newPointPresenter.destroy();
@@ -149,7 +149,7 @@ export default class MainPresenter {
         this.#pointsModel.deletePoint(updateType, update);
         break;
     }
-  }
+  };
 
   #handleModelEvent = (updateType, data) => {
     switch (updateType) {

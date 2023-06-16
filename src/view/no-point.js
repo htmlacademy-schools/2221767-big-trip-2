@@ -13,7 +13,8 @@ const createNoPointTemplate = () => {
   return (
     `<p class="trip-events__msg">${noTaskTextValue}</p>`
   );
-}
+};
+
 export default class NoPoint extends AbstractView {
   #filterType = null;
 

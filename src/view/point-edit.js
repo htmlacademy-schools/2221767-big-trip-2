@@ -45,9 +45,9 @@ const generateOffers = (allOffers, checkedOffers) => {
         <span class="event__offer-price">${offer.price}</span>
       </label>
     </div>`;
-    });
-    return result;
-  };
+  });
+  return result;
+};
 const generateDate = (dateFrom, dateTo) => (
   `<div class="event__field-group  event__field-group--time">
    <label class="visually-hidden" for="event-start-time-1">From</label>
@@ -199,7 +199,7 @@ export default class PointEdit extends AbstractStatefulView {
 
   reset = (point) => {
     this.updateElement(PointEdit.parsePointToState(point));
-  }
+  };
 
   #setDateFromPicker() {
     if (this._state.dateFrom) {
@@ -214,7 +214,7 @@ export default class PointEdit extends AbstractStatefulView {
         },
       );
     }
-  };
+  }
 
   #setDateToPicker() {
     if (this._state.dateTo) {
@@ -230,7 +230,7 @@ export default class PointEdit extends AbstractStatefulView {
         },
       );
     }
-  };
+  }
 
   #dateFromChangeHandler = ([userDate]) => {
     if (this.#dateTo < userDate) {

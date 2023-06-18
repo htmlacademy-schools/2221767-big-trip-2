@@ -1,12 +1,13 @@
 import dayjs from 'dayjs';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import { POINT_TYPES } from '../const/point-types';
-import { getDateTime } from '../utils';
+import { getDateTime } from '../utils/time';
 import flatpickr from 'flatpickr';
+import he from 'he';
 
 import 'flatpickr/dist/flatpickr.min.css';
 
-const BLANK_POINT = {
+export const BLANK_POINT = {
   basePrice: 100,
   dateFrom: dayjs(),
   dateTo: dayjs().add(7, 'day'),
@@ -16,29 +17,30 @@ const BLANK_POINT = {
   type: POINT_TYPES.TAXI
 };
 
-const generatePictures = (pictures) => {
+const renderPictures = (pictures) => {
   let result = '';
   pictures.forEach((picture) => {
-    result = `${result}<img class="event__photo" src="${picture['src']}" alt="${picture.description}">`;
+    result = `${result}<img class="event__photo" src="${picture.src}" alt="${picture.description}">`;
   });
   return result;
 };
 
-const generateDestinations = (destinations) => {
+const renderDestinations = (destinations) => {
   let result = '';
   destinations.forEach((destination) => {
     result = `${result}
-   <option value="${destination.name}"></option>`;
+    <option value="${destination.name}"></option>`;
   });
   return result;
 };
-const generateOffers = (allOffers, checkedOffers, isDisabled) => {
+
+const renderOffers = (allOffers, checkedOffers, isDisabled) => {
   let result = '';
   allOffers.forEach((offer) => {
     const checked = checkedOffers.includes(offer.id) ? 'checked' : '';
     result = `${result}
     <div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked} ${isDisabled ? 'disabled' : ''}>
+      <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-luggage" ${checked} ${isDisabled ? 'disabled' : ''}>
       <label class="event__offer-label" for="event-offer-${offer.id}">
         <span class="event__offer-title">${offer.title}</span>
         &plus;&euro;&nbsp;
@@ -48,21 +50,24 @@ const generateOffers = (allOffers, checkedOffers, isDisabled) => {
   });
   return result;
 };
-const generateDate = (dateFrom, dateTo, isDisabled) => (
-  `<div class="event__field-group  event__field-group--time">
-   <label class="visually-hidden" for="event-start-time-1">From</label>
-   <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}" ${isDisabled ? 'disabled' : ''}>
 
-   &mdash;
-   <label class="visually-hidden" for="event-end-time-1">To</label>
-   <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}" ${isDisabled ? 'disabled' : ''}>   </div>`
+const renderDate = (dateFrom, dateTo, isDisabled) => (
+  `<div class="event__field-group  event__field-group--time">
+    <label class="visually-hidden" for="event-start-time-1">From</label>
+    <input class="event__input  event__input--time" id="event-start-time-1" type="text" name="event-start-time" value="${getDateTime(dateFrom)}"
+    ${isDisabled ? 'disabled' : ''}>
+    &mdash;
+    <label class="visually-hidden" for="event-end-time-1">To</label>
+    <input class="event__input  event__input--time" id="event-end-time-1" type="text" name="event-end-time" value="${getDateTime(dateTo)}"
+    ${isDisabled ? 'disabled' : ''}>
+  </div>`
 );
 
-const generateType = (currentType, isDisabled) => Object.values(POINT_TYPES).map((type) =>
-  `<div class="event__type-item">
-   <input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}${isDisabled ? 'disabled' : ''}>
-   <label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
-   </div>`).join('');
+const renderType = (currentType, isDisabled) => Object.values(POINT_TYPES).map((type) => `<div class="event__type-item">
+<input id="event-type-${type}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type}" ${currentType === type ? 'checked' : ''}
+${isDisabled ? 'disabled' : ''}>
+<label class="event__type-label  event__type-label--${type}" for="event-type-${type}-1">${type}</label>
+</div>`).join('');
 
 const createEditFormTemplate = (point, destinations, allOffers, isNewPoint) => {
   const { basePrice, type, destination, dateFrom, dateTo, offers, isDisabled, isSaving, isDeleting } = point;
@@ -81,51 +86,56 @@ const createEditFormTemplate = (point, destinations, allOffers, isNewPoint) => {
         <div class="event__type-list">
           <fieldset class="event__type-group">
             <legend class="visually-hidden">Event type</legend>
-            ${generateType(type, isDisabled)}
+            ${renderType(type, isDisabled)}
           </fieldset>
         </div>
       </div>
       <div class="event__field-group  event__field-group--destination">
         <label class="event__label  event__type-output" for="event-destination-${destination}">
-          ${type}
+        ${type}
         </label>
-        <input class="event__input event__input--destination" id="event-destination-${destination}" type="text" name="event-destination" value="${currentDestination ? currentDestination.name : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
-        <datalist id="destination-list-1"${isDisabled ? 'disabled' : ''}>
-        ${generateDestinations(destinations)}
+        <input class="event__input event__input--destination" id="event-destination-${destination}" type="text" name="event-destination"
+        value="${currentDestination ? he.encode(currentDestination.name) : ''}" list="destination-list-1" ${isDisabled ? 'disabled' : ''}>
+        <datalist id="destination-list-1">
+          ${renderDestinations(destinations)}
         </datalist>
       </div>
-        ${generateDate(dateFrom, dateTo, isDisabled)}
+      ${renderDate(dateFrom, dateTo, isDisabled)}
       <div class="event__field-group  event__field-group--price">
         <label class="event__label" for="event-price-1">
           <span class="visually-hidden">Price</span>
           &euro;
         </label>
-        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
+        <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price"
+        value="${basePrice}" ${isDisabled ? 'disabled' : ''}>
       </div>
-    <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
+
+      <button class="event__save-btn  btn  btn--blue" type="submit" ${isDisabled ? 'disabled' : ''}>${isSaving ? 'Saving...' : 'Save'}</button>
       ${isNewPoint ? `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>Cancel</button>` :
-    `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
+      `<button class="event__reset-btn" type="reset" ${isDisabled ? 'disabled' : ''}>${isDeleting ? 'Deleting...' : 'Delete'}</button>
        <button class="event__rollup-btn" type="button">`}
         <span class="visually-hidden">Open event</span>
       </button>
     </header>
     <section class="event__details">
+
       <section class="event__section  event__section--offers">
         <h3 class="event__section-title  event__section-title--offers">Offers</h3>
         <div class="event__available-offers">
-        ${generateOffers(offersByType.offers, offers, isDisabled)}
+        ${renderOffers(offersByType.offers, offers, isDisabled)}
         </div>
       </section>
-       ${currentDestination ? `<section class="event__section  event__section--destination">
+
+      ${currentDestination ? `<section class="event__section  event__section--destination">
         <h3 class="event__section-title  event__section-title--destination">Destination</h3>
         <p class="event__destination-description">${currentDestination.description}</p>
         <div class="event__photos-container">
           <div class="event__photos-tape">
-            ${generatePictures(currentDestination.pictures)}
+            ${renderPictures(currentDestination.pictures)}
           </div>
         </div>
-      </section>
-    </section>` : ''}
+      </section>` : ''}
+    </section>
   </form>
 </li>`);
 };
@@ -165,8 +175,6 @@ export default class PointEdit extends AbstractStatefulView {
   setCloseClickHandler = (callback) => {
     this._callback.closeClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#closeClickHandler);
-    this.#setDateFromPicker();
-    this.#setDateToPicker();
   };
 
   #closeClickHandler = (evt) => {
@@ -330,8 +338,4 @@ export default class PointEdit extends AbstractStatefulView {
     return point;
   };
 
-
-  _restoreHandlers() {
-    return undefined;
-  }
 }

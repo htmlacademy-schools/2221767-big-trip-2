@@ -1,5 +1,8 @@
 import { FILTER_TYPE } from '../const/filter';
-import { isPointPast, isPointFuture} from '../utils';
+import dayjs from 'dayjs';
+
+const isPointPast = (pointDate) => dayjs(pointDate.dateFrom).isBefore(dayjs());
+const isPointFuture = (pointDate) => dayjs(pointDate.dateFrom).isAfter(dayjs());
 
 const filterFunction = {
   [FILTER_TYPE.EVERYTHING]: (points) => points,
@@ -7,4 +10,4 @@ const filterFunction = {
   [FILTER_TYPE.PAST]: (points) => points.filter((point) => isPointPast(point))
 };
 
-export { filterFunction };
+export { filterFunction, isPointPast, isPointFuture };

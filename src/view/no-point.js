@@ -1,17 +1,17 @@
 import AbstractView from '../framework/view/abstract-view.js';
 import { FILTER_TYPE } from '../const/filter';
 
-const NoPointsTexts = {
+const NoPointsTextType = {
   [FILTER_TYPE.EVERYTHING]: 'Click New Event to create your first point',
   [FILTER_TYPE.PAST]: 'There are no past events now',
   [FILTER_TYPE.FUTURE]: 'There are no future events now',
 };
 
-const createNoPointTemplate = () => {
-  const noTaskTextValue = NoPointsTexts[FILTER_TYPE];
+const createNoPointTemplate = (filterType) => {
+  const noTextValue = NoPointsTextType[filterType];
 
   return (
-    `<p class="trip-events__msg">${noTaskTextValue}</p>`
+    `<p class="trip-events__msg">${noTextValue}</p>`
   );
 };
 
@@ -26,4 +26,5 @@ export default class NoPoint extends AbstractView {
   get template() {
     return createNoPointTemplate(this.#filterType);
   }
+
 }

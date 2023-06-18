@@ -21,15 +21,15 @@ export default class UiBlocker {
 
   /** @type {number} Идентификатор таймера */
   #timerId;
-
-  /**
-   * @param {Object} config Объект с настройками блокировщика
-   * @param {number} config.lowerLimit Время до блокировки интерфейса в миллисекундах. Если вызвать метод unblock раньше, то интерфейс заблокирован не будет
-   * @param {number} config.upperLimit Минимальное время блокировки в миллисекундах. Минимальная длительность блокировки
-   */
-  constructor({lowerLimit, upperLimit}) {
-    this.#lowerLimit = lowerLimit;
-    this.#upperLimit = upperLimit;
+  lowerLimit;
+  upperLimit;
+  UPPER_LIMIT;
+  LOWER_LIMIT;
+  constructor(LOWER_LIMIT, UPPER_LIMIT) {
+    this.LOWER_LIMIT = LOWER_LIMIT;
+    this.UPPER_LIMIT = UPPER_LIMIT;
+    this.#lowerLimit = this.lowerLimit;
+    this.#upperLimit = this.upperLimit;
 
     this.#element = document.createElement('div');
     this.#element.classList.add('ui-blocker');

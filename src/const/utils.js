@@ -2,7 +2,7 @@ const UpdateType = {
   PATCH: 'PATCH',
   MINOR: 'MINOR',
   MAJOR: 'MAJOR',
-  INIT: 'INIT'
+  INIT: 'INIT',
 };
 
 const UserAction = {
@@ -11,4 +11,9 @@ const UserAction = {
   DELETE_POINT: 'DELETE_POINT',
 };
 
-export { UpdateType, UserAction };
+const TimeLimit = {
+  LOWER_LIMIT: 350,
+  UPPER_LIMIT: 1000,
+};
+
+export { UpdateType, UserAction, TimeLimit };
